@@ -22,6 +22,56 @@ A comprehensive guide to building LLVM, Clang, and Clang-tools-extra
 
 ---
 
+## Environment Setup
+
+### Preparing Your Development Environment
+
+**Network Configuration (if behind corporate proxy)**:
+```bash
+# Set proxy for Git
+git config --global http.proxy http://proxy.company.com:8080
+git config --global https.proxy http://proxy.company.com:8080
+
+# Set proxy for shell (add to ~/.bashrc or ~/.zshrc)
+export http_proxy=http://proxy.company.com:8080
+export https_proxy=http://proxy.company.com:8080
+export HTTP_PROXY=$http_proxy
+export HTTPS_PROXY=$https_proxy
+
+# For tools that need it
+export no_proxy=localhost,127.0.0.1,.company.com
+```
+
+---
+
+## More Environment Setup
+
+### Additional Configurations
+
+**Verify connectivity**:
+```bash
+# Test GitHub access
+git ls-remote https://github.com/llvm/llvm-project.git
+
+# Test HTTPS
+curl -I https://github.com
+```
+
+**Unset proxy (when not needed)**:
+```bash
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY
+```
+
+**Alternative: Use SSH instead of HTTPS**:
+```bash
+# Clone with SSH (if proxy allows)
+git clone git@github.com:llvm/llvm-project.git
+```
+
+---
+
 ## Key LLVM Concepts
 
 ### Understanding the Basics
@@ -458,6 +508,42 @@ cmake --build .
 ```
 
 **Note**: The `--` separates tool options from compiler flags
+
+---
+
+## LibTooling Project Examples
+
+### Real-World Projects on GitHub
+
+**Official LLVM Projects**:
+- **clang-tidy** - Static analyzer and linter
+- **clangd** - Language server protocol implementation
+- **clang-format** - Code formatting tool
+- All in: https://github.com/llvm/llvm-project/tree/main/clang-tools-extra
+
+**Community Projects**:
+- **include-what-you-use** - Analyze C++ includes
+  - https://github.com/include-what-you-use/include-what-you-use
+- **clang-rename** - Intelligent symbol renaming
+- **clang-query** - Interactive AST matcher tool
+
+---
+
+## LibTooling Learning Resources
+
+### Documentation and Tutorials
+
+**Official Documentation**:
+- LibTooling Tutorial: https://clang.llvm.org/docs/LibTooling.html
+- AST Matcher Reference: https://clang.llvm.org/docs/LibASTMatchersReference.html
+- Clang API Docs: https://clang.llvm.org/doxygen/
+
+**Example Code**:
+- Browse clang-tools-extra source for patterns
+- Each tool shows different LibTooling features
+- Well-documented and production-quality
+
+**Tips**: Start with simple visitors, then explore matchers
 
 ---
 
