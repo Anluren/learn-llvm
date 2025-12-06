@@ -2,7 +2,7 @@
 marp: true
 theme: default
 paginate: true
-size: 1920px 1080px
+size: 1920px 1200px
 style: |
   section {
     font-size: 20px;
@@ -413,6 +413,33 @@ ninja install
 ```
 
 **Note**: No rebuild needed - only affects installation step
+
+---
+
+## Managing Multiple Clang Versions
+
+### Using update-alternatives (Debian/Ubuntu)
+
+**Install alternatives**:
+```bash
+# Add system clang-17
+sudo update-alternatives --install /usr/bin/clang clang \
+  /usr/local/bin/clang-17 100
+
+# Add custom clang-17 with higher priority
+sudo update-alternatives --install /usr/bin/clang clang \
+  /home/user/llvm-install/bin/clang-17 200
+```
+
+**Switch between versions**:
+```bash
+sudo update-alternatives --config clang
+```
+
+**Verify selection**:
+```bash
+clang --version
+```
 
 ---
 
