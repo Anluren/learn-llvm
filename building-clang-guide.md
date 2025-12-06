@@ -5,21 +5,15 @@ paginate: true
 size: 1920px 1080px
 style: |
   section {
-    font-size: 24px;
+    font-size: 20px;
   }
   pre {
-    font-size: 18px;
+    font-size: 16px;
   }
   .columns {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
-  }
-  section.compact {
-    font-size: 20px;
-  }
-  section.compact pre {
-    font-size: 16px;
   }
 ---
 
@@ -160,9 +154,7 @@ if (isa<FunctionDecl>(D)) { ... }
 **SmallVector<T, N>**
 - Inline storage for N elements, heap for larger
 - Avoids allocations for small sizes
-- `SmallVector<int, 8>` - stores up to 8 ints inline
-
-**StringRef**
+- `SmallVector<int, 8>` - stores up to 8 ints if**
 - Non-owning string reference (pointer + length)
 - No allocations, no copies
 - Fast string passing and comparison
@@ -400,6 +392,30 @@ clangd --version
 
 ---
 
+## Changing Install Location
+
+### After Build is Complete
+
+**Option 1: Using --prefix (easiest)**
+```bash
+cmake --install . --prefix /new/install/path
+```
+
+**Option 2: Using DESTDIR**
+```bash
+DESTDIR=/new/install/path ninja install
+```
+
+**Option 3: Reconfigure CMAKE_INSTALL_PREFIX**
+```bash
+cmake -DCMAKE_INSTALL_PREFIX=/new/install/path .
+ninja install
+```
+
+**Note**: No rebuild needed - only affects installation step
+
+---
+
 ## Clang Extra Tools
 
 ### Available Tools in clang-tools-extra
@@ -452,8 +468,6 @@ This installs Clang libraries, headers, and CMake config files needed for LibToo
 
 ---
 
-<!-- _class: compact -->
-
 ## Configure Environment for LibTooling
 
 **Option 1: Standard Installation Path**
@@ -480,6 +494,25 @@ cmake -DLLVM_DIR=$LLVM_DIR .
 llvm-config --libdir    # Library directory
 llvm-config --includedir # Header directory
 ```
+
+---
+
+## Out-of-Tree LibTooling Development
+
+### Developing Outside LLVM Source Tree
+
+**Benefits**:
+- Independent project repository
+- Separate build and versioning
+- Use installed LLVM/Clang libraries
+- Easier distribution and maintenance
+
+**Prerequisites**:
+- LLVM/Clang installed (with headers and libraries)
+- CMake 3.13.4+
+- Compilation database (optional, for testing)
+
+**Key Point**: Link against installed LLVM/Clang, not source tree
 
 ---
 
@@ -708,8 +741,6 @@ ninja clang-tools-extra
    ```
 4. **Reduce linking**: `-DLLVM_BUILD_LLVM_DYLIB=ON`
 5. **Parallel jobs**: `ninja -j8`
-
----
 
 ---
 
