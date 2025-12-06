@@ -739,6 +739,78 @@ public:
 
 ---
 
+## Clang Plugins
+
+### Extend Clang at Compile Time
+
+**What are Clang Plugins?**
+- Dynamically loaded libraries extending Clang
+- Run during compilation to analyze code
+- Enforce custom constraints and checks
+
+**Use Cases:**
+- Enforce coding standards (naming, patterns)
+- Detect security vulnerabilities
+- Apply domain-specific rules
+- Custom warnings and errors
+
+**Key Difference**: Plugins run during compilation, LibTooling runs standalone
+
+---
+
+## Creating a Clang Plugin
+
+### Basic Plugin Structure
+
+```cpp
+#include "clang/Frontend/FrontendPluginRegistry.h"
+#include "clang/AST/ASTConsumer.h"
+
+class MyPluginAction : public PluginASTAction {
+protected:
+  std::unique_ptr<ASTConsumer> CreateASTConsumer(
+      CompilerInstance &CI, StringRef) override {
+    return std::make_unique<MyConsumer>();
+  }
+  
+  bool ParseArgs(const CompilerInstance &,
+                 const std::vector<std::string> &) override {
+    return true;
+  }
+};
+
+static FrontendPluginRegistry::Add<MyPluginAction>
+X("my-plugin", "Custom constraint checker");
+```
+
+---
+
+## Building and Using Plugins
+
+### Compile and Load
+
+**Build the plugin**:
+```cmake
+add_library(MyPlugin MODULE MyPlugin.cpp)
+target_link_libraries(MyPlugin clangAST clangBasic clangFrontend)
+```
+
+**Use the plugin**:
+```bash
+clang++ -fplugin=./MyPlugin.so \
+  -Xclang -plugin -Xclang my-plugin \
+  source.cpp
+```
+
+**Add plugin arguments**:
+```bash
+clang++ -fplugin=./MyPlugin.so \
+  -Xclang -plugin-arg-my-plugin -Xclang --strict \
+  source.cpp
+```
+
+---
+
 ## Building Individual Tools
 
 ### Build Only What You Need
