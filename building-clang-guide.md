@@ -348,6 +348,9 @@ cmake -G Ninja \
   ../llvm
 ```
 
+> **:warning: NOTE:**
+> `BUILD_SHARED_LIBS` is only recommended for use by LLVM developers. If you want to build LLVM as a shared library, you should use the `LLVM_BUILD_LLVM_DYLIB` option instead.
+
 </div>
 </div>
 
