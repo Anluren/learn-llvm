@@ -6,23 +6,24 @@
 #include "clang/Sema/Sema.h"
 #include "llvm/Support/raw_ostream.h"
 
-using namespace clang;
+
 
 // Visitor that checks naming conventions
-class NamingConventionVisitor : public RecursiveASTVisitor<NamingConventionVisitor> {
+
+class NamingConventionVisitor : public clang::RecursiveASTVisitor<NamingConventionVisitor> {
 private:
-  ASTContext *Context;
-  DiagnosticsEngine &Diags;
+  clang::ASTContext *Context;
+  clang::DiagnosticsEngine &Diags;
   unsigned DiagID;
 
 public:
-  NamingConventionVisitor(ASTContext *Context)
+  NamingConventionVisitor(clang::ASTContext *Context)
       : Context(Context), Diags(Context->getDiagnostics()) {
-    DiagID = Diags.getCustomDiagID(DiagnosticsEngine::Warning,
+    DiagID = Diags.getCustomDiagID(clang::DiagnosticsEngine::Warning,
                                     "Function name '%0' does not follow snake_case convention");
   }
 
-  bool VisitFunctionDecl(FunctionDecl *FD) {
+  bool VisitFunctionDecl(clang::FunctionDecl *FD) {
     // Skip compiler-generated functions and main
     if (FD->isImplicit() || FD->getNameAsString() == "main")
       return true;
@@ -39,7 +40,7 @@ public:
     }
 
     if (!isSnakeCase) {
-      DiagnosticBuilder DB = Diags.Report(FD->getLocation(), DiagID);
+      clang::DiagnosticBuilder DB = Diags.Report(FD->getLocation(), DiagID);
       DB.AddString(Name);
     }
 
@@ -48,27 +49,29 @@ public:
 };
 
 // AST Consumer that creates the visitor
-class NamingConventionConsumer : public ASTConsumer {
+
+class NamingConventionConsumer : public clang::ASTConsumer {
 private:
   NamingConventionVisitor Visitor;
 
 public:
-  NamingConventionConsumer(ASTContext *Context) : Visitor(Context) {}
+  NamingConventionConsumer(clang::ASTContext *Context) : Visitor(Context) {}
 
-  void HandleTranslationUnit(ASTContext &Context) override {
+  void HandleTranslationUnit(clang::ASTContext &Context) override {
     Visitor.TraverseDecl(Context.getTranslationUnitDecl());
   }
 };
 
 // Plugin action that creates the consumer
-class NamingConventionAction : public PluginASTAction {
+
+class NamingConventionAction : public clang::PluginASTAction {
 protected:
-  std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
+  std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(clang::CompilerInstance &CI,
                                                    llvm::StringRef) override {
     return std::make_unique<NamingConventionConsumer>(&CI.getASTContext());
   }
 
-  bool ParseArgs(const CompilerInstance &CI,
+  bool ParseArgs(const clang::CompilerInstance &CI,
                  const std::vector<std::string> &args) override {
     // You can parse plugin arguments here
     for (const auto &arg : args) {
@@ -83,5 +86,6 @@ protected:
 };
 
 // Register the plugin
-static FrontendPluginRegistry::Add<NamingConventionAction>
+
+static clang::FrontendPluginRegistry::Add<NamingConventionAction>
 X("naming-convention", "Check function naming conventions (snake_case)");

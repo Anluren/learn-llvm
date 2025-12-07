@@ -295,7 +295,8 @@ Create `.vscode/settings.json`:
     "LLVM_ENABLE_PROJECTS": ["clang", "clang-tools-extra"],
     "CMAKE_BUILD_TYPE": "Release",
     "CMAKE_CXX_STANDARD": "17",
-    "LLVM_TARGETS_TO_BUILD": "X86"
+    "LLVM_TARGETS_TO_BUILD": "X86",
+    "LLVM_USE_LINKER": "lld",
   }
 }
 ```
@@ -343,6 +344,7 @@ cmake -G Ninja \
   -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
   -DLLVM_ENABLE_ASSERTIONS=ON \
   -DLLVM_TARGETS_TO_BUILD="X86" \
+  -DLLVM_USE_LINKER=lld,
   ../llvm
 ```
 
