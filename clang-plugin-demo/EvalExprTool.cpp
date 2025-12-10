@@ -34,6 +34,26 @@ public:
     return true;
   }
 
+  bool VisitBinaryOperator(BinaryOperator *BO) {
+    const Expr *E = dyn_cast<Expr>(BO);
+    if (E && E->isEvaluatable(*Context)) {
+      Expr::EvalResult Result;
+      if (E->EvaluateAsRValue(Result, *Context)) {
+        llvm::outs() << "BinaryExpr at line "
+                    << Context->getSourceManager().getSpellingLineNumber(E->getExprLoc())
+                    << " = ";
+        if (Result.Val.isInt())
+          llvm::outs() << Result.Val.getInt();
+        else if (Result.Val.isFloat())
+          llvm::outs() << Result.Val.getFloat().convertToDouble();
+        else
+          llvm::outs() << "<non-int/float value>";
+        llvm::outs() << "\n";
+      }
+    }
+    return true;
+  }
+
 private:
   ASTContext *Context;
 };
