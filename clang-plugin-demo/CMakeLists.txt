@@ -1,3 +1,35 @@
+# lld linker logic disabled for now due to build issues
+# find_program(LLD_PROGRAM NAMES lld lld-link)
+# if(LLD_PROGRAM)
+#   message(STATUS "lld linker found: enabling lld as linker")
+#   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld")
+#   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=lld")
+#   set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -fuse-ld=lld")
+# endif()
+# Store common Clang libraries in a variable for reuse
+set(CLANG_LIBS
+  clangAST
+  clangBasic
+  clangDriver
+  clangFrontend
+  clangParse
+  clangSema
+  clangAnalysis
+  clangEdit
+  clangLex
+  clangTooling
+  clangASTMatchers
+)
+# # Build the constant expression evaluator tool
+# add_executable(eval-expr EvalExprTool.cpp)
+# target_link_libraries(eval-expr PRIVATE
+#   clangAST
+#   clangBasic
+#   clangFrontend
+#   clangTooling
+#   clangASTMatchers
+# )
+# target_compile_options(eval-expr PRIVATE -fno-rtti)
 # Set C++ standard for all targets
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -13,14 +45,14 @@ if(LLD_PROGRAM)
     LINK_FLAGS "-fuse-ld=lld"
   )
 endif()
-# Enable lld linker if available
-find_program(LLD_PROGRAM NAMES lld lld-link)
-if(LLD_PROGRAM)
-  message(STATUS "lld linker found: enabling lld as linker")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld")
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=lld")
-  set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -fuse-ld=lld")
-endif()
+# LLD linker logic disabled for now due to build issues
+# find_program(LLD_PROGRAM NAMES lld lld-link)
+# if(LLD_PROGRAM)
+#   message(STATUS "lld linker found: enabling lld as linker")
+#   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld")
+#   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=lld")
+#   set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -fuse-ld=lld")
+# endif()
 
 cmake_minimum_required(VERSION 3.13.4)
 project(NamingCheckerTool)
@@ -44,23 +76,14 @@ include_directories(${CLANG_INCLUDE_DIRS})
 # Add LLVM definitions
 add_definitions(${LLVM_DEFINITIONS})
 
-# Build the standalone tool
-add_executable(naming-checker NamingCheckerTool.cpp)
+## Build the EvalExprTool standalone tool
+add_executable(eval-expr EvalExprTool.cpp)
+target_link_libraries(eval-expr PRIVATE ${CLANG_LIBS})
+target_compile_options(eval-expr PRIVATE -fno-rtti)
 
-# Link against Clang libraries
-target_link_libraries(naming-checker PRIVATE
-  clangAST
-  clangBasic
-  clangDriver
-  clangFrontend
-  clangParse
-  clangSema
-  clangAnalysis
-  clangEdit
-  clangLex
-  clangTooling
-  clangASTMatchers
-)
+# Build the naming-checker standalone tool
+add_executable(naming-checker NamingCheckerTool.cpp)
+target_link_libraries(naming-checker PRIVATE ${CLANG_LIBS})
 
 # Disable RTTI to match LLVM's build configuration
 target_compile_options(naming-checker PRIVATE -fno-rtti)
