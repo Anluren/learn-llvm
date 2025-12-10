@@ -24,8 +24,8 @@ public:
         llvm::outs() << "Variable '" << VD->getName() << "' = ";
         if (Result.Val.isInt())
           llvm::outs() << Result.Val.getInt();
-        // else if (Result.Val.isFloat())
-        //   llvm::outs() << Result.Val.getFloat();
+        else if (Result.Val.isFloat())
+          llvm::outs() << Result.Val.getFloat().convertToDouble();
         else
           llvm::outs() << "<non-int/float value>";
         llvm::outs() << "\n";
