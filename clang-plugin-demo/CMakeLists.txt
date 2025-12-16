@@ -87,3 +87,8 @@ target_link_libraries(naming-checker PRIVATE ${CLANG_LIBS})
 
 # Disable RTTI to match LLVM's build configuration
 target_compile_options(naming-checker PRIVATE -fno-rtti)
+
+# Build the for-loop-iterator standalone tool
+add_executable(for-loop-iterator ForLoopIteratorVisitor.cpp)
+target_link_libraries(for-loop-iterator PRIVATE ${CLANG_LIBS})
+target_compile_options(for-loop-iterator PRIVATE -fno-rtti)
