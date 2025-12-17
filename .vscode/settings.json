@@ -1,0 +1,4 @@
+{
+    "cmake.sourceDirectory": "${workspaceFolder}/clang-plugin-demo",
+    "cmake.buildDirectory": "${workspaceFolder}/clang-plugin-demo/build"
+}
