@@ -159,9 +159,21 @@ public:
   }
 };
 
-// To run: clang-tooling infrastructure, e.g. with clang::tooling::runToolOnCode
+
+#include "clang/Tooling/CommonOptionsParser.h"
+#include "clang/Tooling/Tooling.h"
+#include "llvm/Support/CommandLine.h"
+#include "llvm/Support/Error.h"
+
 int main(int argc, const char **argv) {
-  if (argc > 1) {
-    clang::tooling::runToolOnCode(std::make_unique<ForLoopAction>(), argv[1]);
+  llvm::cl::OptionCategory ToolCategory("for-loop-iterator options");
+  auto ExpectedParser = clang::tooling::CommonOptionsParser::create(argc, argv, ToolCategory);
+  if (!ExpectedParser) {
+    llvm::errs() << llvm::toString(ExpectedParser.takeError()) << "\n";
+    return 1;
   }
+  clang::tooling::CommonOptionsParser &OptionsParser = ExpectedParser.get();
+  clang::tooling::ClangTool Tool(OptionsParser.getCompilations(),
+                                 OptionsParser.getSourcePathList());
+  return Tool.run(clang::tooling::newFrontendActionFactory<ForLoopAction>().get());
 }
