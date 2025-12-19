@@ -36,7 +36,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Build the Clang plugin (shared library)
-add_library(NamingConventionPlugin MODULE NamingConventionPlugin.cpp)
+add_library(NamingConventionPlugin MODULE src/NamingConventionPlugin.cpp)
 
 # Match LLVM's RTTI and linker settings for the plugin
 target_compile_options(NamingConventionPlugin PRIVATE -fno-rtti)
@@ -77,18 +77,18 @@ include_directories(${CLANG_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 
 ## Build the EvalExprTool standalone tool
-add_executable(eval-expr EvalExprTool.cpp)
+add_executable(eval-expr src/EvalExprTool.cpp)
 target_link_libraries(eval-expr PRIVATE ${CLANG_LIBS})
 target_compile_options(eval-expr PRIVATE -fno-rtti)
 
 # Build the naming-checker standalone tool
-add_executable(naming-checker NamingCheckerTool.cpp)
+add_executable(naming-checker src/NamingCheckerTool.cpp)
 target_link_libraries(naming-checker PRIVATE ${CLANG_LIBS})
 
 # Disable RTTI to match LLVM's build configuration
 target_compile_options(naming-checker PRIVATE -fno-rtti)
 
 # Build the for-loop-iterator standalone tool
-add_executable(for-loop-iterator ForLoopIteratorVisitor.cpp)
+add_executable(for-loop-iterator src/ForLoopIteratorVisitor.cpp)
 target_link_libraries(for-loop-iterator PRIVATE ${CLANG_LIBS})
 target_compile_options(for-loop-iterator PRIVATE -fno-rtti)
